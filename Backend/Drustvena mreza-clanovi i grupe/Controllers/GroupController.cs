@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Drustvena_mreza_clanovi_i_grupe.Models;
-using Drustvena_mreza_clanovi_i_grupe.Repositories;
+﻿using Drustvena_mreza_clanovi_i_grupe.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 {
@@ -8,44 +8,79 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
     [ApiController]
     public class GroupController : ControllerBase
     {
-        private GroupRepository groupRepository = new GroupRepository();
+        private string connectionString = "Data Source=data/mydatabase.db";
 
         [HttpGet]
         public ActionResult<List<Group>> GetAll()
         {
-            return Ok(GroupRepository.Data.Values.ToList());
+            try
+            {
+                // Pozivamo privatnu metodu kako nalaže zadatak
+                List<Group> groups = GetAllFromDatabase();
+                return Ok(groups);
+            }
+            catch (SqliteException ex)
+            {
+                return StatusCode(500, $"Greška baze: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Greška: {ex.Message}");
+            }
         }
 
-        [HttpPost]
-        public ActionResult<Group> Create([FromBody] Group newGroup)
+        private List<Group> GetAllFromDatabase()
         {
-            if (string.IsNullOrWhiteSpace(newGroup.Ime))
+            List<Group> groups = new List<Group>();
+
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
-                return BadRequest("Ime grupe je obavezno.");
+                connection.Open();
+                string query = "SELECT Id, Ime, DatumOsnivanja FROM Groups";
+
+                using (SqliteCommand command = new SqliteCommand(query, connection))
+                {
+                    using (SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            groups.Add(new Group
+                            {
+                                Id = reader.GetInt32(0),
+                                Ime = reader.GetString(1),
+                                DatumOsnivanja = DateTime.Parse(reader.GetString(2))
+                            });
+                        }
+                    }
+                }
             }
-
-            int newId = GroupRepository.Data.Keys.Count > 0 ? GroupRepository.Data.Keys.Max() + 1 : 1;
-            newGroup.Id = newId;
-            newGroup.DatumOsnivanja = DateTime.Now;
-
-            GroupRepository.Data[newId] = newGroup;
-            groupRepository.Save();
-
-            return Ok(newGroup);
+            return groups;
         }
 
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            if (!GroupRepository.Data.ContainsKey(id))
+            try
             {
-                return NotFound();
+                using (SqliteConnection connection = new SqliteConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "DELETE FROM Groups WHERE Id = @id";
+
+                    using (SqliteCommand command = new SqliteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", id);
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected == 0) return NotFound();
+                    }
+                }
+                return NoContent();
             }
-
-            GroupRepository.Data.Remove(id);
-            groupRepository.Save();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
