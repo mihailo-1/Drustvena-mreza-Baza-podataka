@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add or edit user</title>
+    <link rel="stylesheet" href="css/userForm.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <h1 class="title">Social Network</h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li><a href="groups.html">Groups</a></li>
+        </ul>
+        
+    </nav>
+    
+    <h1 id="addTitle">Add new user</h1>
+
+    <h1 id="editTitle">Edit user</h1>
+
+    <div>
+        <form id="form">
+            <label for="username">Username:</label>
+            <input id="username" name="username" type="text" />
+            
+            <span id="usernameError"></span>
+            <br>
+
+            <label for="firstName">First name:</label>
+            <input id="firstName" name="firstName" type="text" />
+            
+            <span id="firstNameError"></span>
+            <br>
+
+            <label for="lastName">Last name:</label>
+            <input id="lastName" name="lastName" type="text" />
+            
+            <span id="lastNameError"></span>
+            <br>
+
+            <label for="dateOfBirth">Date of birth:</label>
+            <input id="dateOfBirth" name="dateOfBirth" type="date" />
+            
+            <span id="dateOfBirthError"></span>
+            <br>
+        </form>
+        <div class="actions">
+            <button id="submitBtn">Submit</button>
+            <button id="cancelBtn">Cancel</button>
+        </div>
+    </div>
+
+    <script src="js/userForm.js" defer></script>
+</body>
+
+</html>

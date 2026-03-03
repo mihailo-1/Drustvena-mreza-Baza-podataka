@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <title>Upravljanje grupama</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h1 class="title">Social Network</h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li><a href="groups.html">Groups</a></li>
+        </ul>
+    </nav>
+    <section id="dodaj-grupu-sekcija">
+        <h3>Dodaj novu grupu</h3>
+        <div class="input-group">
+            <input type="text" id="naziv-nove-grupe" placeholder="Unesite naziv grupe...">
+            <button id="btn-sacuvaj-grupu">Sačuvaj grupu</button>
+        </div>
+        <p id="poruka-dodavanje"></p>
+    </section>
+    <h1>Pregled svih grupa</h1>
+    <div id="status-poruka"></div>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Naziv grupe</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody id="groups-table-body">
+            </tbody>
+    </table>
+
+    <script src="js/groups.js"></script>
+</body>
+</html>

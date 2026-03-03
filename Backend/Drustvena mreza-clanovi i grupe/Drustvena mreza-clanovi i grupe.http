@@ -1,0 +1,6 @@
+@Drustvena_mreza_clanovi_i_grupe_HostAddress = http://localhost:5186
+
+GET {{Drustvena_mreza_clanovi_i_grupe_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

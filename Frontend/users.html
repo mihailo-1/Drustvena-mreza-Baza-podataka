@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+    <link rel="stylesheet" href="css/users.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <h1 class="title">Social Network</h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li><a href="groups.html">Groups</a></li>
+        </ul>
+    </nav>
+
+    <h1>Users</h1>
+    <button id="addBtn">Add new user</button>
+    
+    <div class="table-details">
+        <p id="no-data-message" class="hidden">No data to display.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Date of Birth</th>
+                    <th>Edit</th>
+                    <th>Ukloni</th> 
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+
+        <div id="membership-management" class="hidden">
+            <h3>Dodaj nove članove u grupu</h3>
+            <table id="table-add-users">
+                <thead>
+                    <tr>
+                    <th>Ime i Prezime</th>
+                    <th>Korisničko ime</th>
+                    <th>Akcija</th>
+                    </tr>
+                </thead>
+            <tbody id="tbody-non-members"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <script src="js/users.js"></script>
+
+</body>
+
+</html>
