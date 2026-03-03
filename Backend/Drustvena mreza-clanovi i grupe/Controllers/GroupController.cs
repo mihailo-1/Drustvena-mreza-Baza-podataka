@@ -35,7 +35,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
-                string query = "SELECT Id, Ime, DatumOsnivanja FROM Groups";
+                string query = "SELECT Id, Name, CreationDate FROM Groups";
 
                 using (SqliteCommand command = new SqliteCommand(query, connection))
                 {
@@ -46,8 +46,8 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
                             groups.Add(new Group
                             {
                                 Id = reader.GetInt32(0),
-                                Ime = reader.GetString(1),
-                                DatumOsnivanja = DateTime.Parse(reader.GetString(2))
+                                Name = reader.GetString(1),
+                                CreationDate = DateTime.Parse(reader.GetString(2))
                             });
                         }
                     }
