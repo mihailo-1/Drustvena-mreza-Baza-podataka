@@ -15,7 +15,6 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         {
             try
             {
-                // Pozivamo privatnu metodu kako nalaže zadatak
                 List<Group> groups = GetAllFromDatabase();
                 return Ok(groups);
             }
