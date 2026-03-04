@@ -1,6 +1,6 @@
 ﻿using Drustvena_mreza_clanovi_i_grupe.Models;
+using Drustvena_mreza_clanovi_i_grupe.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.Sqlite;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 {
@@ -8,19 +8,20 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
     [ApiController]
     public class GroupController : ControllerBase
     {
-        private string connectionString = "Data Source=data/mydatabase.db";
+        private readonly GroupDbRepository _repository;
+
+        public GroupController()
+        {
+            _repository = new GroupDbRepository();
+        }
 
         [HttpGet]
         public ActionResult<List<Group>> GetAll()
         {
             try
             {
-                List<Group> groups = GetAllFromDatabase();
+                List<Group> groups = _repository.GetAll();
                 return Ok(groups);
-            }
-            catch (SqliteException ex)
-            {
-                return StatusCode(500, $"Greška baze: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -28,58 +29,23 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             }
         }
 
-        private List<Group> GetAllFromDatabase()
-        {
-            List<Group> groups = new List<Group>();
-
-            using (SqliteConnection connection = new SqliteConnection(connectionString))
-            {
-                connection.Open();
-                string query = "SELECT Id, Name, CreationDate FROM Groups";
-
-                using (SqliteCommand command = new SqliteCommand(query, connection))
-                {
-                    using (SqliteDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            groups.Add(new Group
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                CreationDate = DateTime.Parse(reader.GetString(2))
-                            });
-                        }
-                    }
-                }
-            }
-            return groups;
-        }
-
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        [HttpGet("{id}")]
+        public ActionResult<Group> GetById(int id)
         {
             try
             {
-                using (SqliteConnection connection = new SqliteConnection(connectionString))
+                Group group = _repository.GetById(id);
+                if (group == null)
                 {
-                    connection.Open();
-                    string query = "DELETE FROM Groups WHERE Id = @id";
-
-                    using (SqliteCommand command = new SqliteCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", id);
-                        int rowsAffected = command.ExecuteNonQuery();
-
-                        if (rowsAffected == 0) return NotFound();
-                    }
+                    return NotFound(); 
                 }
-                return NoContent();
+                return Ok(group);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, $"Greška: {ex.Message}");
             }
         }
+
     }
 }
