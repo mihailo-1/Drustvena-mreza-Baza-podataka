@@ -43,126 +43,68 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             return Ok(user);
         }
 
-        //[HttpPost]
-        //public ActionResult<User> Create([FromBody] User newUser)
-        //{
-        //    if (string.IsNullOrWhiteSpace(newUser.KorisnickoIme) ||
-        //        string.IsNullOrWhiteSpace(newUser.Ime) ||
-        //        string.IsNullOrWhiteSpace(newUser.Prezime))
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpPost]
+        public ActionResult<User> Create([FromBody] User newUser)
+        {
+            if (string.IsNullOrWhiteSpace(newUser.KorisnickoIme) ||
+                string.IsNullOrWhiteSpace(newUser.Ime) ||
+                string.IsNullOrWhiteSpace(newUser.Prezime))
+            {
+                return BadRequest();
+            }
 
-        //    newUser.Id = SracunajNoviId(UserRepository.Data.Keys.ToList());
+            try
+            {
+                var repo = new UserDbRepository();
+                var kreirani = repo.Create(newUser);
 
-        //    UserRepository.Data[newUser.Id] = newUser;
+                return Ok(kreirani);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Neuspesno dodavanje korisnika: " + ex.Message);
+            }
+        }
 
-        //    repo.Save();
-        //    return Ok(newUser);
-        //}
+        [HttpPut("{id}")]
+        public ActionResult<User> Update(int id, [FromBody] User uUser)
+        {
+            if (string.IsNullOrWhiteSpace(uUser.KorisnickoIme) ||
+                string.IsNullOrWhiteSpace(uUser.Ime) ||
+                string.IsNullOrWhiteSpace(uUser.Prezime))
+            {
+                return BadRequest();
+            }
 
-        //[HttpPut("{id}")]
-        //public ActionResult<User> Update(int id, [FromBody] User uUser)
-        //{
-        //    if (string.IsNullOrWhiteSpace(uUser.KorisnickoIme) ||
-        //        string.IsNullOrWhiteSpace(uUser.Ime) ||
-        //        string.IsNullOrWhiteSpace(uUser.Prezime))
-        //    {
-        //        return BadRequest();
-        //    }
+            try
+            {
+                UserDbRepository repo = new UserDbRepository();
 
-        //    if (!UserRepository.Data.ContainsKey(id))
-        //    {
-        //        return NotFound();
-        //    }
+                uUser.Id = id;
+                repo.Update(uUser);
 
-        //    User user = UserRepository.Data[id];
-        //    user.KorisnickoIme = uUser.KorisnickoIme;
-        //    user.Ime = uUser.Ime;
-        //    user.Prezime = uUser.Prezime;
-        //    user.DatumRodjenja = uUser.DatumRodjenja;
+                return Ok(uUser);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Greska pri azuriranju korisnika" + ex.Message);
+            }
+        }
 
-        //    repo.Save();
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                UserDbRepository repo = new UserDbRepository();
+                repo.Delete(id);
 
-        //    return Ok(user);
-        //}
-
-        //[HttpDelete("{id}")]
-        //public ActionResult Delete(int id)
-        //{
-        //    if(!UserRepository.Data.ContainsKey(id))
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    UserRepository.Data.Remove(id);
-        //    repo.Save();
-
-        //    return NoContent();
-        //}
-
-
-        //private int SracunajNoviId(List<int> identifikatori)
-        //{
-        //    int maxId = 0;
-        //    foreach (int id in identifikatori)
-        //    {
-        //        if (id > maxId)
-        //        {
-        //            maxId = id;
-        //        }
-        //    }
-        //    return maxId + 1;
-        //}
-
-        //private List<User> GetAllFromDataBase()
-        //{
-        //    List<User> result = new List<User>();   
-
-        //    try
-        //    {
-        //        using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");  
-        //        connection.Open();
-
-        //        string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";  
-
-        //        using SqliteCommand command = new SqliteCommand(query, connection);
-        //        using SqliteDataReader reader = command.ExecuteReader();
-
-        //        while (reader.Read())
-        //        {
-        //            User user = new User
-        //            {
-        //                Id = Convert.ToInt32(reader["Id"]),               
-        //                KorisnickoIme = reader["Username"].ToString(),
-        //                Ime = reader["Name"].ToString(),
-        //                Prezime = reader["Surname"].ToString(),
-        //                DatumRodjenja = DateTime.ParseExact(
-        //                    reader["Birthday"].ToString(),
-        //                    "yyyy-MM-dd",
-        //                    System.Globalization.CultureInfo.InvariantCulture)
-        //            };
-        //            result.Add(user);
-        //        }
-        //    }
-        //    catch (SqliteException ex)
-        //    {
-        //        Console.WriteLine($"Greška sa bazom: {ex.Message}");
-        //    }
-        //    catch (FormatException ex)
-        //    {
-        //        Console.WriteLine($"Greška u formatu datuma: {ex.Message}");
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        Console.WriteLine($"Problem sa konekcijom: {ex.Message}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Neočekivana greška: {ex.Message}");
-        //    }
-
-        //    return result;
-        //}
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Greska pri brisanju korisnika" + ex.Message);
+            }
+        }
     }
 }
