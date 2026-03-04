@@ -18,7 +18,9 @@
             DatumRodjenja = datumRodjenja;
         }
 
-        public User() { }
+        public User()
+        {
+        }
 
     }
 }

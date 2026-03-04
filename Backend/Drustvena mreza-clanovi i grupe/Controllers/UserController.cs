@@ -17,9 +17,10 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
+            UserDbRepository repo = new UserDbRepository();
             try
             {
-                var users = GetAllFromDataBase();
+                var users = repo.GetAllFromDataBase();
                 return Ok(users);
             }
             catch (Exception ex)
@@ -28,15 +29,19 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             }
         }
 
-        //[HttpGet("{id}")]
-        //public ActionResult<User> GetById(int id)
-        //{
-        //    if (!UserRepository.Data.ContainsKey(id))
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(UserRepository.Data[id]);
-        //}
+        [HttpGet("{id}")]
+        public ActionResult<User> GetById(int id)
+        {
+            UserDbRepository repo = new UserDbRepository();
+            User? user = repo.GetById(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
 
         //[HttpPost]
         //public ActionResult<User> Create([FromBody] User newUser)
@@ -110,54 +115,54 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         //    return maxId + 1;
         //}
 
-        private List<User> GetAllFromDataBase()
-        {
-            List<User> result = new List<User>();   
+        //private List<User> GetAllFromDataBase()
+        //{
+        //    List<User> result = new List<User>();   
 
-            try
-            {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");  
-                connection.Open();
+        //    try
+        //    {
+        //        using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");  
+        //        connection.Open();
 
-                string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";  
+        //        string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";  
 
-                using SqliteCommand command = new SqliteCommand(query, connection);
-                using SqliteDataReader reader = command.ExecuteReader();
+        //        using SqliteCommand command = new SqliteCommand(query, connection);
+        //        using SqliteDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
-                {
-                    User user = new User
-                    {
-                        Id = Convert.ToInt32(reader["Id"]),               
-                        KorisnickoIme = reader["Username"].ToString(),
-                        Ime = reader["Name"].ToString(),
-                        Prezime = reader["Surname"].ToString(),
-                        DatumRodjenja = DateTime.ParseExact(
-                            reader["Birthday"].ToString(),
-                            "yyyy-MM-dd",
-                            System.Globalization.CultureInfo.InvariantCulture)
-                    };
-                    result.Add(user);
-                }
-            }
-            catch (SqliteException ex)
-            {
-                Console.WriteLine($"Greška sa bazom: {ex.Message}");
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine($"Greška u formatu datuma: {ex.Message}");
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"Problem sa konekcijom: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Neočekivana greška: {ex.Message}");
-            }
+        //        while (reader.Read())
+        //        {
+        //            User user = new User
+        //            {
+        //                Id = Convert.ToInt32(reader["Id"]),               
+        //                KorisnickoIme = reader["Username"].ToString(),
+        //                Ime = reader["Name"].ToString(),
+        //                Prezime = reader["Surname"].ToString(),
+        //                DatumRodjenja = DateTime.ParseExact(
+        //                    reader["Birthday"].ToString(),
+        //                    "yyyy-MM-dd",
+        //                    System.Globalization.CultureInfo.InvariantCulture)
+        //            };
+        //            result.Add(user);
+        //        }
+        //    }
+        //    catch (SqliteException ex)
+        //    {
+        //        Console.WriteLine($"Greška sa bazom: {ex.Message}");
+        //    }
+        //    catch (FormatException ex)
+        //    {
+        //        Console.WriteLine($"Greška u formatu datuma: {ex.Message}");
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        Console.WriteLine($"Problem sa konekcijom: {ex.Message}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Neočekivana greška: {ex.Message}");
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }
