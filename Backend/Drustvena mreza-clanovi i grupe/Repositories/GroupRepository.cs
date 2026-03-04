@@ -53,7 +53,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             List<string> lines = new List<string>();
             foreach (Group g in Data.Values)
             {
-                lines.Add($"{g.Id},{g.Ime},{g.DatumOsnivanja:yyyy-MM-dd}");
+                lines.Add($"{g.Id},{g.Name},{g.CreationDate:yyyy-MM-dd}");
             }
             File.WriteAllLines(filePath, lines);
         }
