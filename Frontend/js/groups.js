@@ -28,7 +28,6 @@ function prikaziGrupe(grupe) {
             <td>${naziv}</td> 
             <td>
                 <button class="btn-members" onclick="window.location.href='users.html?id=${g.id}'">Članovi</button>
-                
                 <button class="btn-delete-group" onclick="obrisiGrupu(${g.id})">Obriši</button>
             </td>
         `;
@@ -89,6 +88,7 @@ function dodajGrupu() {
         poruka.innerText = "Server nije dostupan.";
     });
 }
+
 
 document.getElementById("btn-sacuvaj-grupu").addEventListener("click", function() {
     dodajGrupu();

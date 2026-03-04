@@ -66,5 +66,63 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             }
             return null;
         }
+
+        public int Add(Group group)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO Groups (Name, CreationDate) VALUES (@Name, @Date); SELECT last_insert_rowid();";
+                command.Parameters.AddWithValue("@Name", group.Ime);
+                command.Parameters.AddWithValue("@Date", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                int noviId = Convert.ToInt32(command.ExecuteScalar());
+                return noviId;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Greška pri dodavanju: " + ex.Message); 
+                throw;
+            }
+        }
+
+        public void Update(Group group)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "UPDATE Groups SET Name = @Name WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Name", group.Ime);
+                command.Parameters.AddWithValue("@Id", group.Id);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Greška pri izmeni: " + ex.Message); 
+                throw;
+            }
+        }
+
+        public void Delete(int id)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Groups WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Greška pri brisanju: " + ex.Message);
+                throw;
+            }
+        }
     }
 }

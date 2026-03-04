@@ -47,5 +47,35 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] Group group)
+        {
+            if (group == null) return BadRequest();
+            int noviId = _repository.Add(group);
+            group.Id = noviId;
+            return CreatedAtAction(nameof(GetById), new { id = noviId }, group);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Group group)
+        {
+            var postojeca = _repository.GetById(id);
+            if (postojeca == null) return NotFound(); 
+
+            group.Id = id;
+            _repository.Update(group);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var postojeca = _repository.GetById(id);
+            if (postojeca == null) return NotFound();
+
+            _repository.Delete(id);
+            return NoContent();
+        }
+
     }
 }
