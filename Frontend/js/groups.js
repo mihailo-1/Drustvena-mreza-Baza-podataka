@@ -16,14 +16,16 @@ function ucitajGrupe() {
 }
 
 function prikaziGrupe(grupe) {
+
     const tbody = document.getElementById("groups-table-body");
     tbody.innerHTML = "";
 
     grupe.forEach(g => {
+        const naziv = g.ime || g.Ime;
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${g.id}</td>
-            <td>${g.ime}</td> 
+            <td>${naziv}</td> 
             <td>
                 <button class="btn-members" onclick="window.location.href='users.html?id=${g.id}'">Članovi</button>
                 
