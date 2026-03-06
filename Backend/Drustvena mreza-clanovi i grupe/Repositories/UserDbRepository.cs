@@ -7,13 +7,21 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 {
     public class UserDbRepository
     {
+
+        public readonly string connectionString;
+
+        public UserDbRepository(IConfiguration configuration)
+        {
+            connectionString = configuration["ConnectionString:SQLiteConnection"];
+        }
+
         public List<User> GetAllFromDataBase()
         {
             List<User> result = new List<User>();
 
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";
@@ -61,7 +69,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users WHERE Id = @id";
@@ -112,7 +120,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = @"
@@ -150,7 +158,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = @"
@@ -190,7 +198,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=data/mydatabase.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
                 string query = "DELETE FROM Users WHERE Id = @Id";

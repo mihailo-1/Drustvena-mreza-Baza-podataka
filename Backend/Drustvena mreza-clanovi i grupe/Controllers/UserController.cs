@@ -13,14 +13,20 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private UserDbRepository userDbRepository;
+
+        public UserController(IConfiguration configuration)
+        {
+            userDbRepository = new UserDbRepository(configuration);
+        }
+
 
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
-            UserDbRepository repo = new UserDbRepository();
             try
             {
-                var users = repo.GetAllFromDataBase();
+                var users = userDbRepository.GetAllFromDataBase();
                 return Ok(users);
             }
             catch (Exception ex)
@@ -32,8 +38,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         [HttpGet("{id}")]
         public ActionResult<User> GetById(int id)
         {
-            UserDbRepository repo = new UserDbRepository();
-            User? user = repo.GetById(id);
+            User? user = userDbRepository.GetById(id);
 
             if (user == null)
             {
@@ -55,8 +60,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 
             try
             {
-                var repo = new UserDbRepository();
-                var kreirani = repo.Create(newUser);
+                var kreirani = userDbRepository.Create(newUser);
 
                 return Ok(kreirani);
             }
@@ -78,10 +82,8 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 
             try
             {
-                UserDbRepository repo = new UserDbRepository();
-
                 uUser.Id = id;
-                repo.Update(uUser);
+                userDbRepository.Update(uUser);
 
                 return Ok(uUser);
             }
@@ -96,8 +98,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         {
             try
             {
-                UserDbRepository repo = new UserDbRepository();
-                repo.Delete(id);
+                userDbRepository.Delete(id);
 
                 return NoContent();
             }
