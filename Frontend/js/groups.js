@@ -15,12 +15,12 @@ function ucitajGrupe() {
         });
 }
 
-function prikaziGrupe(grupe) {
+function prikaziGrupe(odgovor) {
 
     const tbody = document.getElementById("groups-table-body");
     tbody.innerHTML = "";
 
-    grupe.forEach(g => {
+    odgovor.data.forEach(g => {
         const naziv = g.ime || g.Ime;
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -32,6 +32,7 @@ function prikaziGrupe(grupe) {
             </td>
         `;
         tbody.appendChild(tr);
+        console.log("Ukupno grupa u bazi: " + odgovor.totalCount);
     });
 }
 

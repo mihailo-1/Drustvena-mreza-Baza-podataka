@@ -1,8 +1,9 @@
-﻿using Microsoft.Data.Sqlite;
-using Drustvena_mreza_clanovi_i_grupe.Models;
+﻿using Drustvena_mreza_clanovi_i_grupe.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 {
@@ -17,16 +18,20 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
-        public List<Group> GetAll()
+        public List<Group> GetAll(int page, int pageSize)
         {
             List<Group> groups = new List<Group>();
             try
             {
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
-                string query = "SELECT Id, Name, CreationDate FROM Groups";
+
+                string query = "SELECT Id, Name, CreationDate FROM Groups LIMIT @Limit OFFSET @Offset";
 
                 using SqliteCommand command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@Limit", pageSize);
+                command.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
+
                 using SqliteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -171,6 +176,20 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                 Console.WriteLine($"Neočekivana greška pri dodavanju: {ex.Message}");
                 throw;
             }
+        }
+
+        public int CountAll()
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM Groups";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+
+                return Convert.ToInt32(command.ExecuteScalar()); 
+            }
+            catch (Exception) { throw; }
         }
     }
 }

@@ -17,16 +17,22 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Group>> GetAll()
+        public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                List<Group> groups = _repository.GetAll();
-                return Ok(groups);
+                var groups = _repository.GetAll(page, pageSize);
+                var totalCount = _repository.CountAll();
+
+                return Ok(new
+                {
+                    Data = groups,
+                    TotalCount = totalCount
+                });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Greška: {ex.Message}");
+                return Problem("Greška pri dohvatanju stranice sa grupama.");
             }
         }
 
