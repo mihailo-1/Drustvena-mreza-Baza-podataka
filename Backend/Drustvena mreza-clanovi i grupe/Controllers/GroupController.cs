@@ -1,6 +1,7 @@
 ﻿using Drustvena_mreza_clanovi_i_grupe.Models;
 using Drustvena_mreza_clanovi_i_grupe.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 {
@@ -10,9 +11,9 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
     {
         private readonly GroupDbRepository _repository;
 
-        public GroupController()
+        public GroupController(IConfiguration configuration)
         {
-            _repository = new GroupDbRepository();
+            _repository = new GroupDbRepository(configuration);
         }
 
         [HttpGet]
@@ -51,30 +52,51 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
         public IActionResult Post([FromBody] Group group)
         {
             if (group == null) return BadRequest();
-            int noviId = _repository.Add(group);
-            group.Id = noviId;
-            return CreatedAtAction(nameof(GetById), new { id = noviId }, group);
+            try {
+                int noviId = _repository.Add(group);
+                group.Id = noviId;
+                return CreatedAtAction(nameof(GetById), new { id = noviId }, group);
+            }
+
+            catch (Exception ex) {
+                return Problem("Greška pri kreiranju grupe."); 
+            }
+
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Group group)
         {
-            var postojeca = _repository.GetById(id);
-            if (postojeca == null) return NotFound(); 
+            try
+            {
+                var postojeca = _repository.GetById(id);
+                if (postojeca == null) return NotFound();
 
-            group.Id = id;
-            _repository.Update(group);
-            return NoContent();
+                group.Id = id;
+                _repository.Update(group);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return Problem("Greška pri ažuriranju grupe."); 
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var postojeca = _repository.GetById(id);
-            if (postojeca == null) return NotFound();
+            try
+            {
+                var postojeca = _repository.GetById(id);
+                if (postojeca == null) return NotFound();
 
-            _repository.Delete(id);
-            return NoContent();
+                _repository.Delete(id);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return Problem("Greška pri brisanju grupe."); 
+            }
         }
 
     }

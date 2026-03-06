@@ -2,12 +2,20 @@
 using Drustvena_mreza_clanovi_i_grupe.Models;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 {
     public class GroupDbRepository
     {
-        private readonly string connectionString = "Data Source=data/mydatabase.db";
+        private readonly string connectionString;
+        //= "Data Source=data/mydatabase.db";
+
+        public GroupDbRepository(IConfiguration configuration)
+        {
+            
+            connectionString = configuration["ConnectionString:SQLiteConnection"];
+        }
 
         public List<Group> GetAll()
         {
@@ -30,9 +38,25 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                     });
                 }
             }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri povezivanju sa bazom ili izvršavanju SQL upita: {ex.Message}");
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u formatu podataka: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Greška jer konekcija nije ili je više puta otvorena: {ex.Message}");
+                throw;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Greška u GetAll: {ex.Message}");
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+                throw;
             }
             return groups;
         }
@@ -59,12 +83,23 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                         DatumOsnivanja = DateTime.Parse(reader["CreationDate"].ToString())
                     };
                 }
+                return null;
             }
-            catch (Exception ex)
+            
+            catch (SqliteException ex) 
             {
-                Console.WriteLine($"Greška u GetById: {ex.Message}");
+                Console.WriteLine($"Baza greška: {ex.Message}");
+                throw; 
             }
-            return null;
+            catch (InvalidOperationException ex) {
+                Console.WriteLine($"Konekcija greška: {ex.Message}");
+                throw; 
+            }
+            catch (Exception ex) {
+                Console.WriteLine($"Opšta greška: {ex.Message}");
+                throw; 
+            }
+            
         }
 
         public int Add(Group group)
@@ -81,10 +116,13 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                 int noviId = Convert.ToInt32(command.ExecuteScalar());
                 return noviId;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Greška pri dodavanju: " + ex.Message); 
-                throw;
+            catch (SqliteException ex) {
+                Console.WriteLine($"SQL Insert greška: {ex.Message}");
+                throw; 
+            }
+            catch (Exception ex) {
+                Console.WriteLine($"Neočekivana greška pri dodavanju: {ex.Message}");
+                throw; 
             }
         }
 
@@ -100,9 +138,14 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                 command.Parameters.AddWithValue("@Id", group.Id);
                 command.ExecuteNonQuery();
             }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"SQL Update greška: {ex.Message}");
+                throw;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("Greška pri izmeni: " + ex.Message); 
+                Console.WriteLine($"Neočekivana greška pri dodavanju: {ex.Message}");
                 throw;
             }
         }
@@ -118,9 +161,14 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                 command.Parameters.AddWithValue("@Id", id);
                 command.ExecuteNonQuery();
             }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"SQL Delete greška: {ex.Message}");
+                throw;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("Greška pri brisanju: " + ex.Message);
+                Console.WriteLine($"Neočekivana greška pri dodavanju: {ex.Message}");
                 throw;
             }
         }
