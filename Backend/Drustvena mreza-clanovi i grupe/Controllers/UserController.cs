@@ -22,12 +22,23 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
 
 
         [HttpGet]
-        public ActionResult<List<User>> GetAll()
+        public ActionResult GetPaged([FromQuery]int page = 1,[FromQuery] int pageSize = 10)
         {
+            if (page < 1 || pageSize < 1)
+            {
+                return BadRequest("Page i pageSize moraju biti veci od 0.");
+            }
+
             try
             {
-                var users = userDbRepository.GetAllFromDataBase();
-                return Ok(users);
+                List<User> users = userDbRepository.GetPaged(page, pageSize);
+                int totalCount = userDbRepository.CountAll();
+                Object result = new
+                {
+                    Data = users,
+                    TotalCount = totalCount
+                };
+                return Ok(result);
             }
             catch (Exception ex)
             {

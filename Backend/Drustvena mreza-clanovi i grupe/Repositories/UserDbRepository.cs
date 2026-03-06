@@ -1,7 +1,8 @@
 ﻿using Drustvena_mreza_clanovi_i_grupe.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.Sqlite;
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 
 namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 {
@@ -15,7 +16,7 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             connectionString = configuration["ConnectionString:SQLiteConnection"];
         }
 
-        public List<User> GetAllFromDataBase()
+        public List<User> GetPaged(int page, int pageSize)
         {
             List<User> result = new List<User>();
 
@@ -24,9 +25,12 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
 
-                string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users";
+                string query = "SELECT Id, Username, Name, Surname, Birthday FROM Users LIMIT @PageSize OFFSET @Offset";
 
                 using SqliteCommand command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@PageSize", pageSize);
+                command.Parameters.AddWithValue("@Offset", pageSize * (page - 1));
+
                 using SqliteDataReader reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -220,6 +224,37 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             catch (Exception ex)
             {
                 throw new Exception("Neocekivana greska pri brisanju korisnika", ex);
+            }
+        }
+
+        public int CountAll()
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Users";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+                int totalCount = Convert.ToInt32(command.ExecuteScalar());
+
+                return totalCount;               
+            }
+            catch (SqliteException ex)
+            {
+                throw new Exception($"Greska sa bazom: {ex.Message}");
+            }
+            catch (FormatException ex)
+            {
+                throw new Exception($"Greska u formatu datuma: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new Exception($"Problem sa konekcijom: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Neocekivana greška: {ex.Message}");
             }
         }
     }
