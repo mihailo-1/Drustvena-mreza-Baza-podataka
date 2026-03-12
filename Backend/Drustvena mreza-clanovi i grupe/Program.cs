@@ -1,6 +1,13 @@
+using Drustvena_mreza_clanovi_i_grupe.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -12,16 +19,16 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<UserDbRepository>();
+builder.Services.AddScoped<GroupDbRepository>();
+builder.Services.AddScoped<GroupMembershipDbRepository>();  
 
 var app = builder.Build();
 
+
 app.UseCors("AllowAllOrigins");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -33,3 +40,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
