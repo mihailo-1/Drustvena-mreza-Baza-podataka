@@ -69,42 +69,85 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 
         public Group GetById(int id)
         {
+            Group group = null;
+            var korisnici = new List<User>();
+
             try
             {
                 using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
-                string query = "SELECT Id, Name, CreationDate FROM Groups WHERE Id = @Id";
+
+                string query = @"
+                    SELECT 
+                     g.Id              AS GroupId,
+                     g.Name            AS GroupName,
+                     g.CreationDate    AS GroupCreationDate,
+                     u.Id              AS UserId,
+                     u.Username        AS KorisnickoIme,
+                     u.Name            AS Ime,
+                     u.Surname         AS Prezime,
+                     u.Birthday        AS DatumRodjenja
+                    FROM Groups g
+                    LEFT JOIN GroupMemberships gm ON g.Id = gm.GroupId
+                    LEFT JOIN Users u ON gm.UserId = u.Id
+                    WHERE g.Id = @Id";
 
                 using SqliteCommand command = new SqliteCommand(query, connection);
                 command.Parameters.AddWithValue("@Id", id);
 
                 using SqliteDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+
+                while (reader.Read())
                 {
-                    return new Group
+                    if (group == null)
                     {
-                        Id = Convert.ToInt32(reader["Id"]),
-                        Ime = reader["Name"].ToString(),
-                        DatumOsnivanja = DateTime.Parse(reader["CreationDate"].ToString())
-                    };
+                        group = new Group
+                        {
+                            Id = Convert.ToInt32(reader["GroupId"]),
+                            Ime = reader["GroupName"].ToString(),
+                            DatumOsnivanja = DateTime.ParseExact(
+                                reader["GroupCreationDate"].ToString(),
+                                        "yyyy-MM-dd",
+                                System.Globalization.CultureInfo.InvariantCulture)
+                        };
+                    }
+
+                    if (reader["UserId"] != DBNull.Value)
+                    {
+                        var clan = new User
+                        {
+                            Id = Convert.ToInt32(reader["UserId"]),
+                            KorisnickoIme = reader["KorisnickoIme"].ToString(),
+                            Ime = reader["Ime"].ToString(),
+                            Prezime = reader["Prezime"].ToString(),
+                            DatumRodjenja = DateTime.ParseExact(
+                                reader["DatumRodjenja"].ToString(),
+                                "yyyy-MM-dd",
+                                System.Globalization.CultureInfo.InvariantCulture)
+                        };
+
+                        korisnici.Add(clan);
+                    }
                 }
-                return null;
+
+                if (group != null)
+                {
+                    group.Korisnici = korisnici;
+                }
+
+                return group;
             }
-            
-            catch (SqliteException ex) 
+            catch (SqliteException ex)
             {
                 Console.WriteLine($"Baza greška: {ex.Message}");
-                throw; 
+                throw;
             }
-            catch (InvalidOperationException ex) {
-                Console.WriteLine($"Konekcija greška: {ex.Message}");
-                throw; 
-            }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine($"Opšta greška: {ex.Message}");
-                throw; 
+                throw;
             }
-            
+
         }
 
         public int Add(Group group)
