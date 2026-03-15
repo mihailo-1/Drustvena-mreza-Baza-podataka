@@ -66,6 +66,18 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
             }
         }
 
+        public void Create(Post post)
+        {
+            using SqliteConnection connection = new SqliteConnection(connectionString);
+            connection.Open();
+            string query = "INSERT INTO Posts (UserId, Content, Date) VALUES (@userId, @content, @date)";
 
+            using SqliteCommand command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@userId", post.UserId);
+            command.Parameters.AddWithValue("@content", post.Content);
+            command.Parameters.AddWithValue("@date", post.Date);
+
+            command.ExecuteNonQuery();
+        }
     }
 }

@@ -21,5 +21,21 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
             var posts = _postRepository.GetAll();
             return Ok(posts);
         }
+
+        [HttpPost]
+        public IActionResult CreatePost([FromBody] Post post)
+        {
+            try
+            {
+                _postRepository.Create(post);
+                return Ok(new { message = "Objava uspešno kreirana!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
+
+
 }
