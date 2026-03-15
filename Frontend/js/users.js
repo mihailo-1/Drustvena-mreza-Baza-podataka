@@ -21,13 +21,15 @@ function getAll() {
             }
             return response.json();
         })
-        .then(users => {
-            renderData(users); 
+        .then(response => {
+            const users = response.data || response; 
+            renderData(users);
 
             if (groupId) {
                 ucitajKorisnikeZaDodavanje(groupId);
             }
-        })       
+        })
+  
         .catch(error => {                        
             console.error('Error:', error.message);
             let table = document.querySelector('.table-details table');
@@ -71,19 +73,19 @@ function renderData(data) {
             let newRow = document.createElement('tr');
 
             let cell1 = document.createElement('td');
-            cell1.textContent = user['korisnickoIme'];
+            cell1.textContent = user['korisnickoIme'] || user['KorisnickoIme'];
             newRow.appendChild(cell1);
 
             let cell2 = document.createElement('td');
-            cell2.textContent = user['ime'];
+            cell2.textContent = user['ime'] || user['Ime'];
             newRow.appendChild(cell2);
 
             let cell3 = document.createElement('td');
-            cell3.textContent = user['prezime'];
+            cell3.textContent = user['prezime'] || user['Prezime'];
             newRow.appendChild(cell3);
 
             let cell4 = document.createElement('td');
-            cell4.textContent = user['datumRodjenja'] ? new Date(user['datumRodjenja']).toLocaleDateString('sr-RS') : '/';
+            cell4.textContent = (user['datumRodjenja'] || user['DatumRodjenja']) ? new Date(user['datumRodjenja'] || user['DatumRodjenja']).toLocaleDateString('sr-RS') : '/';
             newRow.appendChild(cell4);
 
             let cell5 = document.createElement('td');
