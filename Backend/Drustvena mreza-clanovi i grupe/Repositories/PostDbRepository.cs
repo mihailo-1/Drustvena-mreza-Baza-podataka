@@ -79,5 +79,18 @@ namespace Drustvena_mreza_clanovi_i_grupe.Repositories
 
             command.ExecuteNonQuery();
         }
+
+        public void Delete(int id)
+        {
+            using SqliteConnection connection = new SqliteConnection(connectionString);
+            connection.Open();
+
+            string query = "DELETE FROM Posts WHERE Id = @id";
+
+            using SqliteCommand command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@id", id);
+
+            command.ExecuteNonQuery();
+        }
     }
 }

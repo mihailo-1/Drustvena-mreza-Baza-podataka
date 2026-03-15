@@ -35,6 +35,20 @@ namespace Drustvena_mreza_clanovi_i_grupe.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeletePost(int id)
+        {
+            try
+            {
+                _postRepository.Delete(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Greška pri brisanju: {ex.Message}");
+            }
+        }
     }
 
 
